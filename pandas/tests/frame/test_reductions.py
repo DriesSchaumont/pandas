@@ -1307,6 +1307,17 @@ class TestDataFrameReductions:
         exp = Series([pd.NaT], index=["foo"])
         tm.assert_series_equal(res, exp)
 
+    def test_min_max_skipna(method):
+        df = DataFrame(
+            {
+                "foo": ["a", "b", np.nan],
+                "bar": ["c", "d", "e"],
+                "echo": [np.nan, np.nan, np.nan],
+            }
+        )
+        df.min(skipna=True, numeric_only=False)
+        raise NotImplementedError
+
     def test_min_max_dt64_with_NaT_skipna_false(self, request, tz_naive_fixture):
         # GH#36907
         tz = tz_naive_fixture

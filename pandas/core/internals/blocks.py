@@ -68,6 +68,7 @@ from pandas.core.dtypes.missing import (
 )
 
 import pandas.core.algorithms as algos
+from pandas.core.api import isnull
 from pandas.core.array_algos.putmask import (
     extract_bool_array,
     putmask_inplace,
@@ -386,10 +387,16 @@ class Block(PandasObject):
 
         return self._split_op_result(result)
 
-    def reduce(self, func, ignore_failures: bool = False) -> list[Block]:
+    def reduce(
+        self, func, ignore_failures: bool = False, skipna: bool = False
+    ) -> list[Block]:
         # We will apply the function and reshape the result into a single-row
         #  Block with the same mgr_locs; squeezing will be done at a higher level
         assert self.ndim == 2
+
+        values = self.values
+        if self.shape[0] == 1 and skipna:
+            values = values[~isnull(values)]
 
         try:
             result = func(self.values)
@@ -1808,14 +1815,20 @@ class ObjectBlock(NumpyBlock):
     is_object = True
 
     @maybe_split
-    def reduce(self, func, ignore_failures: bool = False) -> list[Block]:
+    def reduce(
+        self, func, ignore_failures: bool = False, skipna: bool = False
+    ) -> list[Block]:
         """
         For object-dtype, we operate column-wise.
         """
         assert self.ndim == 2
 
+        values = self.values
+        if self.shape[0] == 1 and skipna:
+            values = values[~isnull(values)]
+
         try:
-            res = func(self.values)
+            res = func(values)
         except TypeError:
             if not ignore_failures:
                 raise

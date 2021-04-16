@@ -1424,7 +1424,10 @@ class BlockManager(BaseBlockManager):
     # Block-wise Operation
 
     def reduce(
-        self: T, func: Callable, ignore_failures: bool = False
+        self: T,
+        func: Callable,
+        ignore_failures: bool = False,
+        skipna: bool = False,
     ) -> tuple[T, np.ndarray]:
         """
         Apply reduction function blockwise, returning a single-row BlockManager.
@@ -1446,7 +1449,7 @@ class BlockManager(BaseBlockManager):
 
         res_blocks: list[Block] = []
         for blk in self.blocks:
-            nbs = blk.reduce(func, ignore_failures)
+            nbs = blk.reduce(func, ignore_failures, skipna=skipna)
             res_blocks.extend(nbs)
 
         index = Index([None])  # placeholder

@@ -1029,7 +1029,9 @@ class ArrayManager(BaseArrayManager):
     # Array-wise Operation
 
     def reduce(
-        self: T, func: Callable, ignore_failures: bool = False
+        self: T,
+        func: Callable,
+        ignore_failures: bool = False,
     ) -> tuple[T, np.ndarray]:
         """
         Apply reduction function column-wise, returning a single-row ArrayManager.

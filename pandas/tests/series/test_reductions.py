@@ -28,6 +28,16 @@ def test_td64_sum_empty(skipna):
     assert result == pd.Timedelta(0)
 
 
+@pytest.mark.parametrize("method", ["min", "max"])
+def test_min_max_skipna(method):
+    str_list = ["alpha", np.nan, "charlie", "delta"]
+    ser = Series(str_list)
+    expected_series = Series(["alpha", "charlie", "delta"])
+    expected = getattr(expected_series, method)()
+    result = getattr(ser, method)(skipna=True)
+    assert expected == result
+
+
 def test_td64_summation_overflow():
     # GH#9442
     ser = Series(pd.date_range("20130101", periods=100000, freq="H"))
